@@ -47,6 +47,10 @@ function TeamStock() {
     this.itemModal = document.getElementById('item-modal');
     this.itemModalContent = document.getElementById('item-modal-container');
     this.itemModalChanges = document.getElementById('item-modal-changes');
+    this.itemModalName = document.getElementById('itemName');
+    this.itemModalDescription = document.getElementById('itemDescription');
+    this.itemModalDeadline = document.getElementById('itemDeadline');
+    this.itemModalDuration = document.getElementById('itemDuration');
     this.itemModalCancelButton = document.getElementById('item-modal-cancel');
     this.itemModalDoneButton = document.getElementById('item-modal-done');
             // Settings Modal
