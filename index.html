@@ -126,7 +126,7 @@
                                 <span>
                                     <h4>
                                         Selected Planner: 
-                                        <label id="selected-planner">Storage</label>
+                                        <label id="selected-planner">None</label>
                                     </h4>
                                 </span>
                                 <ul id="item-list" class="mdl-list">
@@ -153,6 +153,12 @@
                 </li>
                 <br>
                 <li class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item">
+                    <input class="mdl-textfield__input" type="text" id="itemCategory">
+                    <label class="mdl-textfield__label" for="sample1">Class</label>
+                    <!--TODO: MAKE THIS A DROPDOWN -->
+                </li>
+                <br>
+                <li class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item">
                     <textarea class="mdl-textfield__input" type="text" rows= "2" id="itemDescription" ></textarea>
                     <label class="mdl-textfield__label" for="sample5">Description</label>
                 </li>
@@ -163,7 +169,7 @@
                 </li>
                 <br>
                 <li class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item">
-                    <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="duration">
+                    <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="itemDuration">
                     <label class="mdl-textfield__label" for="itemDuration">Duration</label>
                     <span class="mdl-textfield__error">Input is not a number!</span>
                 </li>                
@@ -199,14 +205,7 @@
             </button>
             <span></span>
             <br>
-            <h5>Planners</h5>
-            <br>
-            <button id="settings-modal-add-planner">
-                <h5>
-                    <i class="material-icons">group_add</i>
-                    <label class="mdl-color-text--black">Add Team</label>
-                </h5>
-            </button>
+    
             <ul id="settings-planners" class="mdl-list">
             </ul>
 

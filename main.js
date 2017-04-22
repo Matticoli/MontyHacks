@@ -48,6 +48,7 @@ function TeamStock() {
     this.itemModalContent = document.getElementById('item-modal-container');
     this.itemModalChanges = document.getElementById('item-modal-changes');
     this.itemModalName = document.getElementById('itemName');
+    this.itemModalCategory = document.getElementById('itemCategory');
     this.itemModalDescription = document.getElementById('itemDescription');
     this.itemModalDeadline = document.getElementById('itemDeadline');
     this.itemModalDuration = document.getElementById('itemDuration');
@@ -61,7 +62,6 @@ function TeamStock() {
     this.settingsModalDeleteCategoryButton = document.getElementById('settings-modal-delete-category');
     this.settingsModalContent = document.getElementById('settings-modal-container');
     this.settingsModalAdmin = document.getElementById('settings-modal-admin-container');
-    this.settingsModalAddTeamButton = document.getElementById('settings-modal-add-planner');
     this.settingsModalUserTeam = document.getElementById('settings-user-planner');
     this.settingsModalWebhook = document.getElementById('settings-webhook');
     this.settingsModalChannel = document.getElementById('settings-channel');
@@ -84,7 +84,6 @@ function TeamStock() {
         //Modals
     this.itemModalCancelButton.addEventListener('click', this.hideItemModal.bind(this));
     this.settingsModalCancelButton.addEventListener('click', this.hideSettingsModal.bind(this));
-    this.settingsModalAddTeamButton.addEventListener('click', this.addTeam.bind(this));
     this.settingsModalDeleteCategoryButton.addEventListener('click', this.deleteCategory.bind(this));
     this.settingsModalDeleteItemButton.addEventListener('click', this.deleteItem.bind(this));
 
@@ -222,6 +221,10 @@ TeamStock.prototype.setControlState = function(isEnabled) {
 
 // Prompt the user to create a new category
 TeamStock.prototype.addCategory = function() {
+    if(!this.activeTeam) {
+        toastr.error("Please create or select a planner first!");
+    }
+    
     this.dbSaveCategory.bind(this)(
         {
             'name': window.prompt('Enter category name:').toUpperCase(),
@@ -231,22 +234,7 @@ TeamStock.prototype.addCategory = function() {
 
 // Prompt the user to create a new item
 TeamStock.prototype.addItem = function() {
-    
-    var category = window.prompt('Enter item category:').toUpperCase();
-    
-    this.dbCheckCategory.bind(this)(category, function() {
-        // Category exists
-        this.dbSaveItem.bind(this)(
-        {
-            'name': window.prompt('Enter item name:').toLowerCase() || '',
-            'description': window.prompt('Enter item description:') || '',
-            'category': category,
-            'distribution': {'Storage': parseInt(window.prompt('Enter qty in storage:')) || 0}
-        });
-    }.bind(this), function() {
-        // Category DNE
-        toastr.error('No such category '+category+'! Please specify an existing category or try a different one.');
-    });
+    this.showItemModal.bind(this)(null);
 }
 
 // Clears categories and items from list
@@ -340,7 +328,9 @@ TeamStock.prototype.loadSidebarContents = function() {
             setTimeout(function() {
                 document.getElementById('drawer-team-'+teamName).addEventListener('click', function() {
                     setTimeout(function() {
-                        this.setActiveTeam.bind(this)(snapshot.val()[teamId]);
+                        var activeTeam = snapshot.val()[teamId];
+                        activeTeam.id = teamId;
+                        this.setActiveTeam.bind(this)(activeTeam);
                     }.bind(this), 100);
                 }.bind(this));
             }.bind(this),100);
@@ -360,22 +350,31 @@ TeamStock.prototype.setActiveTeam = function(team) {
         this.teamChangeCooldown = false;
     }.bind(this),1000);
     
-    var teamName = team && team.name || "None";
+    var teamName = team && team.name || null;
     
-    this.activeTeam = teamName;
-    this.selectedTeamlabel.innerHTML = teamName;
+    this.activeTeam = team;
+    this.selectedTeamlabel.innerHTML = teamName || "None";
     this.dbLoadItems.bind(this)();
-    toastr.success("Switched to team "+teamName);
+    toastr.success("Switched to team "+teamName || "None");
 }
 
 /* Admin UI: */
 
 // Prompts the user to add a new team
 TeamStock.prototype.addTeam = function() {
+    if(!this.activeTeam) {
+        toastr.error("Please create or select a planner first!");
+    }
     this.dbSaveTeam.bind(this)(
         {
             'name': window.prompt('Enter planner name:').toUpperCase(),
-            'tasks': []
+            'tasks': [{
+                'name': 'NullTask',
+                'category': '',
+                'description': 'Ensures task list is initialized in database',
+                'deadline': '',
+                'duration': 0
+            }]
         });
 }
 
@@ -459,10 +458,17 @@ TeamStock.prototype.showItemModal = function(item) {
         }
         
         this.itemModalDoneButton.addEventListener('click', function() {
-            var changes = {};
-                //TODO: Save modal data (get calue from each field and add to changes obj, then write changes obj to firebase)
-                this.hideItemModal.bind(this)();
-            }.bind(this));
+            var item = {
+                'name': this.itemModalName.value || '',
+                'category': this.itemModalCategory.value || '',
+                'description': this.itemModalDescription || '',
+                'deadline': this.itemModalDeadline.value || '',
+                'duration': this.itemModalDuration.value || ''
+            };
+            
+            this.dbSaveItem(item);
+            this.hideItemModal.bind(this)();
+        }.bind(this));
         
     }.bind(this),500);
 }
@@ -746,7 +752,7 @@ TeamStock.prototype.dbLoadItems = function() {
 
 // Checks database to determine whether the given category exists, and runs corresponding callback
 TeamStock.prototype.dbCheckCategory = function(category, existsCallback, nexistsCallback) {
-    this.database.ref(this.prefix + 'categories/').once('value').then(function (snapshot) {
+    this.database.ref(this.prefix + 'teams/' + this.activeTeam.id + '/categories/').once('value').then(function (snapshot) {
         if(category.length > 0 && category in snapshot.val()) {
             existsCallback();
         } else {
@@ -757,18 +763,20 @@ TeamStock.prototype.dbCheckCategory = function(category, existsCallback, nexists
 
 // Saves a new category to the database
 TeamStock.prototype.dbSaveCategory = function(category) {
-    var catRef = this.database.ref(this.prefix + 'categories/'+category.name);
+    var catRef = this.database.ref(this.prefix + 'teams/' + this.activeTeam.id + '/categories/'+category.name);
+        console.log(this.activeTeam.id);
     
     this.doneLoading = false;
     
     // Check if category exists
     catRef.once('value').then(function (snapshot) {
+        console.log(snapshot.val());
         if(snapshot.val() != null) {
             // Category already exists
             toastr.error('That category already exists!', 'Uh oh..');
         } else {
-            // Category does not exist, add item
-            console.log('Adding new item to database...');
+            // Category does not exist, add category
+            console.log('Adding new category to database...');
             catRef.set(category.description).then(function () {
                 // Allow reload:
                 toastr.success('New category added successfully!');
@@ -785,30 +793,38 @@ TeamStock.prototype.dbSaveCategory = function(category) {
 
 // Saves a new item to the database
 TeamStock.prototype.dbSaveItem = function(item) {
-    var itemRef = this.database.ref(this.prefix + 'items/'+item.name);
+    var itemRef = this.database.ref(this.prefix + 'teams/'+this.activeTeam.id+"/tasks");
     
     // Check if item exists
     itemRef.once('value').then(function (snapshot) {
-        if(snapshot.val() != null) {
+        if(snapshot.val() == null) {
             // Item already exists
-            toastr.error('That item already exists!', 'Uh oh..');
+            toastr.error('Couldn\'t find that class', 'Uh oh..');
+        } else if(item.uid) {
+            //TODO: Item exists, update
         } else {
             // Item does not exist, add item
             console.log('Adding new item to database...');
-            itemRef.set({ 
-                name: item.name,
-                description: item.description,
-                category: item.category,
-                distribution: item.distribution
-            }).then(function () {
-                console.log('New item added successfully!');
-                toastr.success('New item added successfully!');
-                this.slack.bind(this)('*'+this.auth.currentUser.displayName.split(' ')[0] + '* _added new item *'+item.name+'* to category *' + item.category + '*_\nQty: _'+JSON.stringify(item.distribution)+'_');
-                this.dbLoadItems.bind(this)();
-            }.bind(this)).catch(function (error) {
-                console.error('Error writing new item to Firebase Database', error);
-                toastr.error('Error saving new item to database.', 'Uh oh...');
-            });
+            
+            this.dbCheckCategory(item.category, function() {
+                itemRef.push({ 
+                    name: item.name,
+                    category: item.category,
+                    description: item.description,
+                    deadline: item.deadline,
+                    duration: item.duration
+                }).then(function () {
+                    console.log('New task added successfully!');
+                    toastr.success('New item added successfully!');
+                    this.slack.bind(this)('*'+this.auth.currentUser.displayName.split(' ')[0] + '* _added new item *'+item.name+'* to category *' + item.category + '*_\nQty: _'+JSON.stringify(item.distribution)+'_');
+                    this.dbLoadItems.bind(this)();
+                }.bind(this)).catch(function (error) {
+                    console.error('Error writing new item to Firebase Database', error);
+                    toastr.error('Error saving new item to database.', 'Uh oh...');
+                });
+            }.bind(this), function() {
+                toastr.error("No such class in this planner!", "Uh oh...")
+            }.bind(this));
         }
     }.bind(this), function(error) {
         if(error) {
@@ -829,8 +845,6 @@ TeamStock.prototype.dbSaveTeam = function(team) {
         console.log('Adding new team to database...');
         teamsRef.push(team).then(function () {
             toastr.success('New team added successfully!');
-            this.hideSettingsModal.bind(this)();
-            this.showSettingsModal.bind(this)();
         }.bind(this)).catch(function (error) {
             console.error('Error writing new team to Firebase Database', error);
             toastr.error('Error saving new team to database.', 'Uh oh...');
@@ -940,7 +954,7 @@ TeamStock.prototype.saveUserIfNew = function(user) {
                 }
                 toastr.error('You do not have permission to access the database.', 'Uh oh..');
             } else {
-                this.setActiveTeam.bind(this)(snapshot.val()['team'] || null);
+                this.setActiveTeam.bind(this)(null);
             }
         } else {
             // User does not exist, add user
