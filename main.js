@@ -278,8 +278,6 @@ TeamStock.prototype.appendListItem = function(item) {
                 console.error('ERROR: Updated item missing from list');
             }
             var icon = document.getElementById('item-icon-'+item.name.replace(/\"| /g, "_"));
-            icon.setAttribute('data-badge',0);
-            icon.setAttribute('data-badge',snapshot.val()[this.activeTeam] || 0);
         }.bind(this));
         
     }.bind(this), 500);
@@ -465,7 +463,20 @@ TeamStock.prototype.showItemModal = function(item) {
         var teamsRef = this.database.ref(this.prefix + 'teams');
         
         if(item) {
-            //TODO: Fill values in item modal from db
+            
+            var taskRef = database.ref(this.prefix + 'teams/' + this.activeTeam.id + '/tasks/'+item.id);
+            
+            taskRef.once('value').then(function(snapshot) {
+                console.log('SET');
+                console.log(snapshot.val());
+                
+                this.itemModalName.value = '';
+                this.itemModalCategory.value = '';
+                this.itemModalDescription.value = '';
+                this.itemModalDeadline.value = '';
+                this.itemModalDuration.value = '';
+            });
+            
         }
         
         this.itemModalDoneButton.addEventListener('click', function() {
