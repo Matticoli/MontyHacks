@@ -1270,7 +1270,76 @@ TeamStock.prototype.onAuthStateChanged = function (user) {
         });
       }
         
-    function createEvent(name,description,st,et){
+    function createEvent(name,description,duration){
+        var st;
+        var et;
+        gapi.client.calendar.events.list({
+          'calendarId': 'primary',
+          'timeMin': (new Date()).toISOString(),
+          'showDeleted': false,
+          'singleEvents': true,
+          'maxResults': 10,
+          'orderBy': 'startTime'
+        }).then(function(response) {
+          var events = response.result.items;
+          appendPre('Upcoming events:');
+
+          if (events.length > 0) {
+            for (i = 0; i < events.length; i++) {
+              var event = events[i];
+              var when = event.start.dateTime;
+              if (!when) {
+                when = event.start.date;
+              }
+              appendPre(event.id+event.summary + ' (' + when + ')')
+              console.log(when);
+                if (event.summary=='homework'){
+                    hwstart = event.start.dateTime;
+                    hwend = event.end.dateTime;
+                }
+            }
+          } else {
+            appendPre('No upcoming events found.');
+          }
+          if (events.length > 0) {
+            for (i = 0; i < events.length; i++) {
+                var event = events[i];
+                if (event.summary=='homework'){
+                    hwstart = event.start.dateTime;
+                    hwend = event.end.dateTime;
+                    gapi.client.calendar.events.list({
+                        'calendarId':'primary',
+                        'timeMin': '2017-04-22T17:00:00-04:00',
+                        'timeMax': '2017-04-22T18:00:00-04:00',
+                          'showDeleted': false,
+                          'singleEvents': true,
+                          'maxResults': 10,
+                          'orderBy': 'startTime'
+                    }).then(function(response){
+                            var events1 = response.result.items;
+                        for (i = 0; i < events1.length; i++) {
+              var event = events1[i];
+              var when = event.start.dateTime;
+              if (!when) {
+                when = event.start.date;
+              }
+              appendPre(event.id+event.summary + ' (' + when + ')')
+              console.log(when);
+            }
+                            });
+                
+              appendPre(hwstart+" "+hwend);
+                    
+
+     
+          } else {
+            appendPre('homework slots not found.');
+          }
+            }
+          }
+            
+        });        
+        
         var ev = {
             'summary': name,
             'description': description,
