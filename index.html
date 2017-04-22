@@ -146,7 +146,30 @@
         <div id="item-modal-loading" class="mdl-spinner mdl-js-spinner is-active"></div>
         
         <div id="item-modal-changes" class="panel-right">
-            
+            <ul id="item-modal-container" class="mdl-list">
+                <div class="mdl-textfield mdl-js-textfield">
+                    <input class="mdl-textfield__input" type="text" id="taskName">
+                    <label class="mdl-textfield__label" for="sample1">Name</label>
+                </div>
+                
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+
+                    <div class="mdl-textfield__expandable-holder">
+                      <input class="mdl-textfield__input" type="text" id="sample6">
+                      <label class="mdl-textfield__label" for="sample-expandable">Description</label>
+                    </div>
+                </div>
+                <div class="mdl-textfield mdl-js-textfield">
+                    <input class="mdl-textfield__input" type="text" id="deadline">
+                    <label class="mdl-textfield__label" for="sample1">Deadline</label>
+                </div>
+                <div class="mdl-textfield mdl-js-textfield">
+                    <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="duration">
+                    <label class="mdl-textfield__label" for="sample2">How many hours will this take?</label>
+                    <span class="mdl-textfield__error">Input is not a number!</span>
+                </div>                
+
+            </ul>
         </div>
  <!-- task attributes-->       
         <ul id="item-modal-container" class="mdl-list">
