@@ -268,8 +268,9 @@ TeamStock.prototype.appendListItem = function(item) {
         var listItem = document.getElementById('li-item-'+item.name.replace(/\"| /g, "_"));
         
         listItem.addEventListener('click', function() {
-            console.log('Opening item modal');
-            this.showItemModal.bind(this)(item);
+//            console.log('Opening item modal');
+//            this.showItemModal.bind(this)(item);
+            $(listItem).slideUp();
         }.bind(this));
         
         
@@ -464,22 +465,22 @@ TeamStock.prototype.showItemModal = function(item) {
     setTimeout(function() {
         var teamsRef = this.database.ref(this.prefix + 'teams');
         
-        if(item) {
-            console.log(item);
-            var taskRef = this.database.ref(this.prefix + 'teams/' + this.activeTeam.id + '/tasks/'+item.id);
-            
-            taskRef.once('value').then(function(snapshot) {
-                console.log('SET');
-                console.log(snapshot.val());
-                
-                this.itemModalName.value = snapshot.val()['name'];
-                this.itemModalCategory.value = snapshot.val()['category'];
-                this.itemModalDescription.value = snapshot.val()['description'];
-                this.itemModalDeadline.value = snapshot.val()['deadline'];
-                this.itemModalDuration.value = snapshot.val()['duration'];
-            }.bind(this));
-            
-        }
+//        if(item) {
+//            console.log(item);
+//            var taskRef = this.database.ref(this.prefix + 'teams/' + this.activeTeam.id + '/tasks/'+item.id);
+//            
+//            taskRef.once('value').then(function(snapshot) {
+//                console.log('SET');
+//                console.log(snapshot.val());
+//                
+//                this.itemModalName.value = snapshot.val()['name'];
+//                this.itemModalCategory.value = snapshot.val()['category'];
+//                this.itemModalDescription.value = snapshot.val()['description'];
+//                this.itemModalDeadline.value = snapshot.val()['deadline'];
+//                this.itemModalDuration.value = snapshot.val()['duration'];
+//            }.bind(this));
+//            
+//        }
         
         this.itemModalDoneButton.addEventListener('click', function() {
             var item = {
