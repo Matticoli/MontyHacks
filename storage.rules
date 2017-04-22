@@ -1,5 +1,5 @@
 service firebase.storage {
-  match /b/team-stock.appspot.com/o {
+  match /b/planner-78fb0.appspot.com/o {
       allow write;
       allow read;
   }
