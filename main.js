@@ -463,19 +463,19 @@ TeamStock.prototype.showItemModal = function(item) {
         var teamsRef = this.database.ref(this.prefix + 'teams');
         
         if(item) {
-            
-            var taskRef = database.ref(this.prefix + 'teams/' + this.activeTeam.id + '/tasks/'+item.id);
+            console.log(item);
+            var taskRef = this.database.ref(this.prefix + 'teams/' + this.activeTeam.id + '/tasks/'+item.id);
             
             taskRef.once('value').then(function(snapshot) {
                 console.log('SET');
                 console.log(snapshot.val());
                 
-                this.itemModalName.value = '';
-                this.itemModalCategory.value = '';
-                this.itemModalDescription.value = '';
-                this.itemModalDeadline.value = '';
-                this.itemModalDuration.value = '';
-            });
+                this.itemModalName.value = snapshot.val()['name'];
+                this.itemModalCategory.value = snapshot.val()['category'];
+                this.itemModalDescription.value = snapshot.val()['description'];
+                this.itemModalDeadline.value = snapshot.val()['deadline'];
+                this.itemModalDuration.value = snapshot.val()['duration'];
+            }.bind(this));
             
         }
         
@@ -777,7 +777,7 @@ TeamStock.prototype.dbLoadItems = function() {
             }
             $('#loading-main').stop().slideDown();
 
-
+            var item = snapshot.val();
             this.appendListItem.bind(this)(snapshot.val());
 
             $('#loading-main').stop().slideUp();
