@@ -88,7 +88,8 @@ function TeamStock() {
     this.settingsModalDeleteCategoryButton.addEventListener('click', this.deleteCategory.bind(this));
     this.settingsModalDeleteItemButton.addEventListener('click', this.deleteItem.bind(this));
 
-    this.initFirebase();   
+    this.initFirebase();  
+
     
 }
 
@@ -490,6 +491,8 @@ TeamStock.prototype.showItemModal = function(item) {
                 'deadline': this.itemModalDeadline.value || '',
                 'duration': this.itemModalDuration.value || ''
             };
+            
+//            createEvent(item.name, item.description, item.deadline, item.deadline);
             
             this.dbSaveItem(item);
             this.hideItemModal.bind(this)();
