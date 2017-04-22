@@ -109,7 +109,7 @@ TeamStock.prototype.listItemTemplate = ' \
             <span class="mdl-list__item-secondary-action"> \
                 <span class="mdl-list__item-secondary-content"> \
                     <h5> \
-                        <i id="item-icon-$CLASSNAME" class="material-icons mdl-badge mdl-badge--overlap" data-badge="$NUM">assignment</i> \
+                        <i id="item-icon-$CLASSNAME" class="material-icons">assignment</i> \
                         $NAME \
                         <i hidden class="material-icons">check</i> \
                     </h5> \
@@ -253,10 +253,14 @@ TeamStock.prototype.appendListCategory = function(cat) {
 // Add an item to the main list
 TeamStock.prototype.appendListItem = function(item) {
     console.log(item);
-    document.getElementById('cat-'+item.category.replace(/\"| /g, "_")).innerHTML += this.listItemTemplate
+    var listContainer = document.getElementById('cat-'+item.category.replace(/\"| /g, "_"));
+    if(!listContainer) {
+        console.log("No such category "+item.category+". Skipping item "+item.name);
+        return;
+    }
+    listContainer.innerHTML += this.listItemTemplate
         .replace(/\$CLASSNAME/g, item.name.replace(/\"| /g, "_"))
-        .replace(/\$NAME/g, item.name)
-        .replace(/\$NUM/g, item.distribution[this.activeTeam] || 0);
+        .replace(/\$NAME/g, item.name);
     // Delay button wiring to ensure ample time for html content to be changed.
     setTimeout(function() {
         var listItem = document.getElementById('li-item-'+item.name.replace(/\"| /g, "_"));
@@ -356,7 +360,9 @@ TeamStock.prototype.setActiveTeam = function(team) {
     this.activeTeam = team;
     this.selectedTeamlabel.innerHTML = teamName || "None";
     this.dbLoadItems.bind(this)();
-    toastr.success("Switched to team "+teamName || "None");
+    if(teamName) {
+        toastr.success("Switched to team "+teamName || "None");
+    }
 }
 
 /* Admin UI: */
@@ -466,7 +472,7 @@ TeamStock.prototype.showItemModal = function(item) {
             var item = {
                 'name': this.itemModalName.value || '',
                 'category': this.itemModalCategory.value.toUpperCase() || '',
-                'description': this.itemModalDescription || '',
+                'description': this.itemModalDescription.value || '',
                 'deadline': this.itemModalDeadline.value || '',
                 'duration': this.itemModalDuration.value || ''
             };
@@ -480,6 +486,12 @@ TeamStock.prototype.showItemModal = function(item) {
 
 // Hide and reset the item modal
 TeamStock.prototype.hideItemModal = function() {
+    
+    this.itemModalName.value = '';
+    this.itemModalCategory.value = '';
+    this.itemModalDescription.value = '';
+    this.itemModalDeadline.value = '';
+    this.itemModalDuration.value = '';
     
     // Clear done button listeners to avoid repeat actions
     var doneButton = this.itemModalDoneButton;
@@ -717,12 +729,20 @@ TeamStock.prototype.hideSettingsModal = function() {
 
 // Load all items/categories from db and call corresponding UI functions to display them
 TeamStock.prototype.dbLoadItems = function() {
-    var itemsRef = this.database.ref(this.prefix + 'items');
-    var catRef = this.database.ref(this.prefix + 'categories');
+    if(!this.activeTeam) {
+        toastr.info("Please select or create a planner in the sidebar");
+        $('#loading-main').stop().slideUp();
+        return;
+    }
+    
+    var itemsRef = this.database.ref(this.prefix + '/teams/' + this.activeTeam.id + '/tasks');
+    var catRef = this.database.ref(this.prefix + '/teams/' + this.activeTeam.id + '/categories');
     
     this.doneLoading = false;
     
     catRef.once('value', function(snapshot) {
+        console.log("SNAP");
+        console.log(snapshot.val());
         this.clearList();
         
         if(snapshot.val()) {
