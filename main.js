@@ -52,6 +52,7 @@ function TeamStock() {
     this.itemModalDescription = document.getElementById('itemDescription');
     this.itemModalDeadline = document.getElementById('itemDeadline');
     this.itemModalDuration = document.getElementById('itemDuration');
+    this.itemModalCheckbox = document.getElementById('itemCheckbox');
     this.itemModalCancelButton = document.getElementById('item-modal-cancel');
     this.itemModalDoneButton = document.getElementById('item-modal-done');
             // Settings Modal
@@ -88,6 +89,7 @@ function TeamStock() {
     this.settingsModalDeleteItemButton.addEventListener('click', this.deleteItem.bind(this));
 
     this.initFirebase();   
+    
 }
 
 /* HTML Templates */
@@ -490,6 +492,8 @@ TeamStock.prototype.showItemModal = function(item) {
             
             this.dbSaveItem(item);
             this.hideItemModal.bind(this)();
+            
+            
         }.bind(this));
         
     }.bind(this),500);

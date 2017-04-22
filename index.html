@@ -172,7 +172,14 @@
                     <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="itemDuration">
                     <label class="mdl-textfield__label" for="itemDuration">Duration</label>
                     <span class="mdl-textfield__error">Input is not a number!</span>
-                </li>                
+                </li>  
+                <br>
+                <li class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item">
+                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-2">
+                      <input type="checkbox" id="itemCheckbox" class="mdl-checkbox__input">
+                      <span class="mdl-checkbox__label">Finished?</span> 
+                    </label>
+                </li>                 
 
             </ul>
         </div>
@@ -187,8 +194,8 @@
         <ul id="settings-modal-container" class="mdl-list">
             <li class="mdl-list__item">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input id="settings-user-planner" class="mdl-textfield__input" type="text" value=" ">
-                    <label class="mdl-textfield__label" for="settings-user-planner">Default Team</label>
+                    <!--<input id="settings-user-planner" class="mdl-textfield__input" type="text" value=" ">
+                    <label class="mdl-textfield__label" for="settings-user-planner">Default Team</label>-->
                 </div>
             </li>
             <button id="settings-modal-delete-category">
