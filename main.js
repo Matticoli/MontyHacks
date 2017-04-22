@@ -374,7 +374,8 @@ TeamStock.prototype.setActiveTeam = function(team) {
 TeamStock.prototype.addTeam = function() {
     this.dbSaveTeam.bind(this)(
         {
-            'name': window.prompt('Enter planner name:').toUpperCase()
+            'name': window.prompt('Enter planner name:').toUpperCase(),
+            'tasks': []
         });
 }
 
