@@ -148,9 +148,16 @@
         <div id="item-modal-changes" class="panel-right">
             
         </div>
-        
+ <!-- task attributes-->       
         <ul id="item-modal-container" class="mdl-list">
-            
+            <div class="mdl-textfield mdl-js-textfield">
+                <input class="mdl-textfield__input" type="text" id="taskName">
+                <label class="mdl-textfield__label" for="sample1">Name</label>
+              </div>
+              <div class="mdl-textfield mdl-js-textfield">
+                <textarea class="mdl-textfield__input" type="text" rows= "2" id="sample5" ></textarea>
+                <label class="mdl-textfield__label" for="sample5">Description</label>
+              </div>
         </ul>
         <div class="button-container-top-right">
             <button id="item-modal-cancel">Cancel<i class="material-icons">cancel</i></button>
@@ -170,15 +177,13 @@
             <button id="settings-modal-delete-category">
                 <h6>
                     <i class="material-icons">delete</i>
-                    <i class="material-icons">build</i>
-                    <label class="mdl-color-text--black">Del Category</label>
+                    <label class="mdl-color-text--black">Delete Category</label>
                 </h6>
             </button>
             <button id="settings-modal-delete-item">
                 <h6>
                     <i class="material-icons">delete</i>
-                    <i class="material-icons">send</i>
-                    <label class="mdl-color-text--black">Del Item</label>
+                    <label class="mdl-color-text--black">Delete Task</label>
                 </h6>
             </button>
             <span></span>
