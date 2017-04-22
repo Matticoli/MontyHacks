@@ -223,6 +223,7 @@ TeamStock.prototype.setControlState = function(isEnabled) {
 TeamStock.prototype.addCategory = function() {
     if(!this.activeTeam) {
         toastr.error("Please create or select a planner first!");
+        return;
     }
     
     this.dbSaveCategory.bind(this)(
@@ -442,6 +443,10 @@ TeamStock.prototype.deleteItem = function() {
 
 // Show and populate modal for editing an item
 TeamStock.prototype.showItemModal = function(item) {
+    if(!this.activeTeam) {
+        toastr.error("Please create or select a planner first!");
+        return;
+    }
     
     if(!this.checkSignedIn()) {
         return;
@@ -460,7 +465,7 @@ TeamStock.prototype.showItemModal = function(item) {
         this.itemModalDoneButton.addEventListener('click', function() {
             var item = {
                 'name': this.itemModalName.value || '',
-                'category': this.itemModalCategory.value || '',
+                'category': this.itemModalCategory.value.toUpperCase() || '',
                 'description': this.itemModalDescription || '',
                 'deadline': this.itemModalDeadline.value || '',
                 'duration': this.itemModalDuration.value || ''
@@ -793,6 +798,7 @@ TeamStock.prototype.dbSaveCategory = function(category) {
 
 // Saves a new item to the database
 TeamStock.prototype.dbSaveItem = function(item) {
+    
     var itemRef = this.database.ref(this.prefix + 'teams/'+this.activeTeam.id+"/tasks");
     
     // Check if item exists
@@ -823,7 +829,7 @@ TeamStock.prototype.dbSaveItem = function(item) {
                     toastr.error('Error saving new item to database.', 'Uh oh...');
                 });
             }.bind(this), function() {
-                toastr.error("No such class in this planner!", "Uh oh...")
+                toastr.error("No such class in this planner!", "Uh oh...");
             }.bind(this));
         }
     }.bind(this), function(error) {
