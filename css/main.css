@@ -114,6 +114,9 @@
         border-top: solid silver 1px;
         border-bottom: solid silver 1px;
     }
+.mdl-textfield{
+    float:left;
+}
 
 .modal .material-icons {
     color: black;
