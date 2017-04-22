@@ -1,0 +1,265 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Scouting Platform">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team-Stock</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    
+    <!-- Disable tap highlight on IE -->
+    <meta name="msapplication-tap-highlight" content="no">
+
+    <!-- Web Application Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="ScoutNet">
+    <meta name="theme-color" content="#303F9F">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ScoutNet">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#303F9F">
+
+    <!-- Tile icon for Win8 -->
+    <meta name="msapplication-TileColor" content="#3372DF">
+    <meta name="msapplication-navbutton-color" content="#303F9F">
+    
+    <!-- Material Design Lite -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.grey-light_blue.min.css" />
+    <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+<!--  TODO: Download these stylesheets^^  -->
+    <!--  Google Fonts  -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+
+    <!-- Bootstrap Core stylesheets -->
+    <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
+    
+    <!--  Custom Stylesheets  -->
+    <!--  VERSION NUMBER MUST BE INCREMENTED ON UPDATE -->
+    <link rel="stylesheet" type="text/css" href="./css/main.css?v=0">
+    
+<!--    TODO: App Icon-->
+</head>
+    
+<!--  TODO: PUSH https://developers.google.com/web/fundamentals/getting-started/codelabs/push-notifications/  -->
+
+<body id="body">
+<!--    Navbar   -->
+    <div id="drawer-container" class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+        <header class="mdl-layout__header">
+            <div class="mdl-layout__header-row">
+                <i class="material-icons">work</i>
+                <h4 id="title">TEAM<label>STOCK</label></h4>                        
+                <div class="mdl-layout-spacer"></div>
+                <label>Filter:</label>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable mdl-textfield--floating-label mdl-textfield--align-right">
+                    <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
+                        <i class="material-icons">search</i>
+                    </label>
+                    <div class="mdl-textfield__expandable-holder">
+                        <input id="search" class="mdl-textfield__input">
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div id="drawer-container" class="mdl-layout__drawer">
+            <nav class="navbar navbar-custom" role="navigation">
+                <div id="user-container" class="container">
+                    <div class="navbar-header">
+                        <div class="nav-obj">
+                            <button hidden id="sign-in" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color-text--white">
+                                <i class="material-icons">account_circle</i>Sign-In
+                            </button>
+
+                            <button hidden id="sign-out" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color-text--white">
+                                <div id="user-pic"></div>Sign Out
+                                <div hidden id="user-name" class></div>
+                                <label class="">Sign Out</label>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <div class="sidebar-nav-container">
+            <nav id="sidebar-nav" class="mdl-navigation">
+                <span class="mdl-layout-title">Teams</span>
+                <a id="drawer-team-storage" class="mdl-navigation__link">
+                    <i class="material-icons">storage</i>
+                    Storage
+                </a>
+                <div id="sidebar-teams"></div>
+                <hr>
+                <a id="edit-teams" class="mdl-navigation__link">
+                    <i class="material-icons">settings</i>
+                    Settings
+                </a>
+                <a id="sidebar-sign-in-prompt" class="mdl-navigation__link" href="">You must sign in to view teams</a>
+            </nav>
+            </div>
+        </div>
+        <main class="mdl-layout__content">
+            <div class="page-content">
+    <!--  End Navbar -->
+
+    <!--    App    -->
+                <div id="app-container">
+                    <div class="container-fluid box">
+                        <div class="row">
+                            <div class="col-md-offset-1 col-md-10">
+                                <button disabled id="add" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored ">
+                                    <i class="material-icons">add</i>
+                                </button>
+                                <ul class="mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect" for="add">
+                                  <li id="add-category" class="mdl-menu__item ">Add Category</li>
+                                  <li id="add-item" class="mdl-menu__item mdl-menu__item--full-bleed-divider">Add Item</li>
+<!--                                  <li id="create-request" class="mdl-menu__item mdl-menu__item--full-bleed-divider">Request Part</li>-->
+                                </ul>
+                                
+                                <div id="loading-main" class="mdl-spinner mdl-js-spinner is-active"></div>
+
+                                <span>
+                                    <h4>
+                                        Selected Team: 
+                                        <label id="selected-team">Storage</label>
+                                    </h4>
+                                </span>
+                                <ul id="item-list" class="mdl-list">
+                                    <!-- Item List -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    <!-- End App -->
+            </div>
+        </main>
+    </div>
+
+    <!--  Modals  -->
+    <div id="item-modal" class="modal">
+        <div id="item-modal-loading" class="mdl-spinner mdl-js-spinner is-active"></div>
+        
+        <div id="item-modal-changes" class="panel-right">
+            
+        </div>
+        
+        <ul id="item-modal-container" class="mdl-list">
+            
+        </ul>
+        <div class="button-container-top-right">
+            <button id="item-modal-cancel">Cancel<i class="material-icons">cancel</i></button>
+            <button id="item-modal-done">Done<i class="material-icons">check_circle</i></button>
+        </div>
+    </div>
+    <div id="settings-modal" class="modal">
+        <h5>Settings</h5>
+        <div id="settings-modal-loading" class="mdl-spinner mdl-js-spinner is-active"></div>
+        <ul id="settings-modal-container" class="mdl-list">
+            <li class="mdl-list__item">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input id="settings-user-team" class="mdl-textfield__input" type="text" value=" ">
+                    <label class="mdl-textfield__label" for="settings-user-team">Default Team</label>
+                </div>
+            </li>
+        </ul>
+        <div hidden id="settings-modal-admin-container">
+            <ul class="mdl-list">
+                <li class="mdl-list__item">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input id="settings-webhook" class="mdl-textfield__input" type="text" value=" ">
+                        <label class="mdl-textfield__label" for="settings-webhook">Slack Webhook</label>
+                    </div>
+                </li>
+                <li class="mdl-list__item">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input id="settings-channel" class="mdl-textfield__input" type="text" value=" ">
+                        <label class="mdl-textfield__label" for="settings-channel">Slack Channel</label>
+                    </div>
+                </li>
+                <li class="mdl-list__item">
+<!--                    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="settings-slack-enabled">-->
+                        <input type="checkbox" id="settings-slack-enabled" >
+                        <span class="mdl-checkbox__label mdl-color-text--white">Slack Integration</span>
+<!--                    </label>-->
+                </li>
+            <button id="settings-modal-delete-category">
+                <h6>
+                    <i class="material-icons">delete</i>
+                    <i class="material-icons">build</i>
+                    <label class="mdl-color-text--black">Del Category</label>
+                </h6>
+            </button>
+            <button id="settings-modal-delete-item">
+                <h6>
+                    <i class="material-icons">delete</i>
+                    <i class="material-icons">send</i>
+                    <label class="mdl-color-text--black">Del Item</label>
+                </h6>
+            </button>
+            <span></span>
+            <br>
+            <h5>Teams</h5>
+            <br>
+            <button id="settings-modal-add-team">
+                <h5>
+                    <i class="material-icons">group_add</i>
+                    <label class="mdl-color-text--black">Add Team</label>
+                </h5>
+            </button>
+            <ul id="settings-teams" class="mdl-list">
+            </ul>
+
+            <h5>Users</h5>
+            <ul id="settings-modal-user-container" class="mdl-list">
+
+            </ul>
+        </div>
+        <div class="button-container-bottom-right">
+            <button id="settings-modal-cancel">Cancel<i class="material-icons">cancel</i></button>
+            <button id="settings-modal-done">Save<i class="material-icons">check_circle</i></button>
+        </div>
+    </div>
+    <!---->
+</body>
+
+
+<!--Firebase Init-->
+<script src="https://www.gstatic.com/firebasejs/3.7.1/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDngY1_F-GtlyunvSOUKK4XJ3SE-5lSDnk",
+    authDomain: "team-stock.firebaseapp.com",
+    databaseURL: "https://team-stock.firebaseio.com",
+    storageBucket: "team-stock.appspot.com",
+    messagingSenderId: "407480016236"
+  };
+  firebase.initializeApp(config);
+</script>
+<!---->
+
+<!-- jQuery -->
+<script src="./js/jquery.js"></script>
+<!---->
+
+<!-- Bootstrap Core JavaScript -->
+<script src="./js/bootstrap.min.js"></script>
+<!---->
+   
+<!--Toastr-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<!---->
+
+    <!--Custom JS-->
+<!--  VERSION NUMBER MUST BE INCREMENTED ON UPDATE -->
+<script src="./main.js?v=0" ></script>
+<!---->
+    
+</html>

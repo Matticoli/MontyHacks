@@ -1,0 +1,230 @@
+/* Global/Theme */
+    html, body {
+      font-family: 'Roboto', 'Helvetica', sans-serif;
+      display: block;
+      color: white;
+      background-color: #303030;
+      overflow-x: hidden;
+    }
+
+    .mdl-layout__content {
+        overflow-y: hidden;
+    }
+
+    .mdl-layout-title {
+        display: block;
+        padding-left: 5%;
+    }
+
+    h1, h2, h3, h4, h5 {
+        color: mintcream;
+    }
+
+    .material-icons {
+      color: lightgrey;
+      font-size: 20px;
+      top: 0px;
+      position: relative;
+    }
+
+    .box {
+        padding: 5%;
+        background-color: #424242;
+        overflow-x: auto;
+        height: 100%;
+    }    
+    .mdl-layout__header {
+      background-color: #303030;
+    color: white;
+    }
+
+    .mdl-list__item-secondary-content i, h5{
+        display: inline-block;
+    }
+
+/* App Content */
+    #add {
+        -webkit-transform: translateZ(0);
+        position: fixed;
+        right: 30px;
+        bottom: 30px;
+        background-color: #303030;
+    }
+
+#drawer-container {
+    overflow: auto;
+}
+
+    .modal {
+        color: darkslategrey;
+        position: fixed;
+        display: none;
+        background-color: #828282;
+        height: 90%;
+        width: 90%;
+        margin: auto;
+/*        border-radius: 10px;*/
+        padding: 20px;
+        overflow-y: scroll;
+    }
+
+    .modal .panel-right {
+        position: absolute;
+        display: fixed;
+        right: 10px;
+        top: 50px;
+        padding: 10px;
+    }
+
+    .modal input, button{
+        border: none;
+        border-radius: 12px;
+        padding: 4px;
+    }
+
+    .modal .button-container-top-right {
+        position: absolute;
+        display: fixed;
+        top: 10px;
+        right: 10px;
+        padding: 10px;
+        word-spacing: 10px;
+    }
+    
+    .modal .button-container-bottom-right {
+        position: absolute;
+        display: fixed;
+        bottom: 10px;
+        right: 10px;
+        padding: 10px;
+        word-spacing: 10px;
+    }
+    
+    .modal .button-container-left {
+        position: absolute;
+        display: fixed;
+        bottom: 10px;
+        left: 10px;
+        padding: 10px;
+        word-spacing: 10px;
+    }
+    
+    .modal .mdl-textfield__input {
+        color: whitesmoke;
+        border-top: solid silver 1px;
+        border-bottom: solid silver 1px;
+    }
+
+.modal .material-icons {
+    color: black;
+}
+
+/* Nav */
+    .navbar-header {
+        width: 100%;
+        display: inline-flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .nav-obj {
+        display: inline-block;
+        width: 100%;
+        padding-left: 10px;
+        flex-direction: row;
+        flex-shrink: 1em;
+    }
+
+    .button, .select{
+        width: 50%;
+        font-size: 20px;
+        background-color: #828282;
+        border: solid 3px #828282;
+        border-radius: 3px;
+        height: wrap;
+    }
+
+    .navbar .material-icons {
+      font-size: 36px;
+      top: 8px;
+      position: relative;
+    }
+
+/* User */
+    #user-container {
+      position: absolute;
+      display: block;
+      top: 0px;
+      width: 100%;
+      right: 0px;
+      box-shadow: 0px 2px 2px grey;
+      padding: 10px;
+      color: white;
+      background-color: #212121;
+    }
+
+    #user-container .material-icons {
+        position: relative;
+        top: -2px;
+    }
+
+    #user-container #sign-in {
+        display: inline-block;
+        width: 100%;
+    }
+
+    #user-container #sign-out {
+        display: inline-block;
+        width: 100%;
+    }
+
+    #user-container #user-pic {
+      top: 5px;
+      padding: 0px;
+      display: inline-block;
+      background-image: url('/images/profile_placeholder.png');
+      background-repeat: no-repeat;
+      width: 35px;
+      height: 35px;
+      background-size: 35px;
+      border-radius: 20px;
+    }
+
+    #user-container #user-name {
+      display: inline-block;
+        position: relative;
+      font-size: 16px;
+      top: -10px;
+      line-height: 36px;
+      padding-right: 10px;
+      padding-left: 20px;
+    }
+
+/* Mobile Scaling */
+    @media screen and (max-width: 610px) {
+      header {
+        height: 113px;
+        padding-bottom: 80px !important;
+      }
+
+      #user-container {
+        top: 0px;
+        height: 38px;
+        padding-top: 3px;
+        padding-right: 2px;
+      }
+
+      #user-container #user-pic {
+        top: 2px;
+        width: 33px;
+        height: 33px;
+        background-size: 33px;
+      }
+    }
+
+/* Plugin */
+.toast {
+    bottom: 10px;
+}
+
+

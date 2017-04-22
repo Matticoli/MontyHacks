@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "fb": "team-stock",
+    "default": "team-stock"
+  }
+}
