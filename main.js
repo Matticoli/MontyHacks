@@ -492,7 +492,7 @@ TeamStock.prototype.showItemModal = function(item) {
                 'duration': this.itemModalDuration.value || ''
             };
             
-//            createEvent(item.name, item.description, item.deadline, item.deadline);
+            createEvent(item.name, item.description, item.deadline, item.deadline);
             
             this.dbSaveItem(item);
             this.hideItemModal.bind(this)();
