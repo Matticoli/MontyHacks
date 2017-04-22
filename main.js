@@ -23,7 +23,7 @@ function TeamStock() {
         // Containers
     this.appContainer = document.getElementById('app-container');
     this.drawerContainer = document.getElementById('drawer-container');
-    this.sidebarTeamsContainer = document.getElementById('sidebar-teams');
+    this.sidebarTeamsContainer = document.getElementById('sidebar-planners');
     this.teamsContainer = document.getElementById('sidebar-nav');
     this.itemList = document.getElementById('item-list');
         // Auth
@@ -34,14 +34,14 @@ function TeamStock() {
         // Control
             // Sidebar
     this.sidebarSigninPrompt = document.getElementById('sidebar-sign-in-prompt');
-    this.editTeamsButton = document.getElementById('edit-teams');
-    this.teamStorageButton = document.getElementById('drawer-team-storage');
+    this.editTeamsButton = document.getElementById('edit-planners');
+    this.teamStorageButton = document.getElementById('drawer-planner-storage');
             // App
-    this.selectedTeamlabel = document.getElementById('selected-team');
+    this.selectedTeamlabel = document.getElementById('selected-planner');
     this.searchBar = document.getElementById('search');
     this.addButton = document.getElementById('add');
     this.addCategoryButton = document.getElementById('add-category');
-    this.addItemButton = document.getElementById('add-item');    
+    this.addItemButton = document.getElementById('add-task');    
     this.createRequestButton = document.getElementById('create-request');
             // Item Modal
     this.itemModal = document.getElementById('item-modal');
@@ -57,12 +57,12 @@ function TeamStock() {
     this.settingsModalDeleteCategoryButton = document.getElementById('settings-modal-delete-category');
     this.settingsModalContent = document.getElementById('settings-modal-container');
     this.settingsModalAdmin = document.getElementById('settings-modal-admin-container');
-    this.settingsModalAddTeamButton = document.getElementById('settings-modal-add-team');
-    this.settingsModalUserTeam = document.getElementById('settings-user-team');
+    this.settingsModalAddTeamButton = document.getElementById('settings-modal-add-planner');
+    this.settingsModalUserTeam = document.getElementById('settings-user-planner');
     this.settingsModalWebhook = document.getElementById('settings-webhook');
     this.settingsModalChannel = document.getElementById('settings-channel');
     this.settingsModalSlackEnabled = document.getElementById('settings-slack-enabled');
-    this.settingsModalTeams = document.getElementById('settings-teams');
+    this.settingsModalTeams = document.getElementById('settings-planners');
     this.settingsModalUsers = document.getElementById('settings-modal-user-container');
     
     // UI Event Listeners:    
@@ -439,110 +439,22 @@ TeamStock.prototype.showItemModal = function(item) {
     if(!this.checkSignedIn()) {
         return;
     }
-    this.itemModalContent.innerHTML = '';
-    
-    this.itemModalContent.innerHTML = '<h4>'+item.name+'</h4>';
-    this.itemModalContent.innerHTML += '<p>'+item.description+'</p>';
-    this.itemModalChanges.innerHTML = '';
     this.setControlState(false);
     $(this.itemModal).slideDown(200);
     
-    var changes = {};
 
     setTimeout(function() {
-    
-        var distribRef = this.database.ref(this.prefix + 'items/'+item.name+'/distribution');
         var teamsRef = this.database.ref(this.prefix + 'teams');
         
-        var appendTeams = function(distribution, teams) {
-            if(!teams) {
-                teams = distribution;
-            }
-            Object.keys(teams).forEach( function (team) {
-                console.log(team);
-                if(document.getElementById('li-team-'+team)) {
-                    return;
-                }
-                this.itemModalContent.innerHTML += this.itemModalTeamTemplate
-                    .replace(/\$NAME/g, team)
-                    .replace(/\$NUM/g,distribution[team] || 0);
-                setTimeout(function() {
-                    var plusButton = document.getElementById(team+'-plus');
-                    var minusButton = document.getElementById(team+'-minus');
-                    plusButton.removeAttribute('hidden');
-                    minusButton.removeAttribute('hidden');
-
-                    plusButton.addEventListener('click', function() {
-                        if(changes[team]) {
-                            changes[team]++;
-                        }  else {
-                            changes[team] = 1;
-                        }
-                        this.itemModalChanges.innerHTML = JSON.stringify(changes)
-                            .replace('}','</label>')
-                            .replace(/\:/g,':  ')
-                            .replace(/\,/g,'<br>')
-                            .replace(/\"/g,'')
-                            .replace('{','<label><b>Changes</b><br>');
-                    }.bind(this));  
-
-                    minusButton.addEventListener('click', function() {
-                        if(changes[team]) {
-                            changes[team]--;
-                        }  else {
-                            changes[team] = -1;
-                        } 
-                        this.itemModalChanges.innerHTML = JSON.stringify(changes)
-                            .replace('}','</label>')
-                            .replace(/\:/g,':  ')
-                            .replace(/\,/g,'<br>')
-                            .replace(/\"/g,'')
-                            .replace('{','<label><b>Changes</b><br>');
-                    }.bind(this));
-
-                    $('#item-modal-loading').slideUp();
-                }.bind(this), 100);
-            }.bind(this));
+        if(item) {
+            //TODO: Fill values in item modal from db
         }
-
-        distribRef.once('value', function (snapshot) {
-            
-            if(!snapshot.val()) {
-               return;
-            }
-            
-            var distribution = snapshot.val();
-            appendTeams.bind(this)(distribution);
-            
-            teamsRef.once('value', function (snapshot) {
-                var teams = snapshot.val();
-                if(!teams) {
-                    return;
-                }
-                Object.keys(distribution).forEach( function(key) {
-                    delete teams[key];
-                }.bind(this));
-                appendTeams.bind(this)(distribution, teams);
-            }.bind(this));
-            
-            this.itemModalDoneButton.addEventListener('click', function() {
-                Object.keys(changes).forEach(function (team) {
-                    console.log('adding '+changes[team]+' to ' + parseInt(distribution[team]));
-                    distribution[team] = parseInt(distribution[team] || '0')+changes[team];
-                }.bind(this));
-
-                distribRef.update(distribution);
-                toastr.success('Changes made successfully');
-                this.slack.bind(this)('*'+this.auth.currentUser.displayName.split(' ')[0] + ' made the following movements of '+item.name+':*\n' + JSON.stringify(changes)
-                            .replace('}','')
-                            .replace(/\:/g,':  ')
-                            .replace(/\,/g,'\n')
-                            .replace(/\"/g,'')
-                            .replace('{','```\n')+'\n```');
+        
+        this.itemModalDoneButton.addEventListener('click', function() {
+            var changes = {};
+                //TODO: Save modal data (get calue from each field and add to changes obj, then write changes obj to firebase)
                 this.hideItemModal.bind(this)();
             }.bind(this));
-        }.bind(this));  
-
         
     }.bind(this),500);
 }
@@ -1142,7 +1054,7 @@ TeamStock.prototype.onAuthStateChanged = function (user) {
 window.onload = function () {
     // UNCOMMENT THIS LINE TO RUN MANUAL TESTS
     /* This allows the TeamStock instance to be accessed from the console to manually run functions */
-//    window.teamStock = 
+    window.teamStock = 
     //----
     new TeamStock();
 };
