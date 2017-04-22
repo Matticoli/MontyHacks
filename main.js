@@ -35,7 +35,7 @@ function TeamStock() {
             // Sidebar
     this.sidebarSigninPrompt = document.getElementById('sidebar-sign-in-prompt');
     this.editTeamsButton = document.getElementById('edit-planners');
-    this.teamStorageButton = document.getElementById('drawer-planner-storage');
+    this.sidebarAddTeamButton = document.getElementById('drawer-planner-add');
             // App
     this.selectedTeamlabel = document.getElementById('selected-planner');
     this.searchBar = document.getElementById('search');
@@ -92,7 +92,7 @@ TeamStock.prototype.listCategoryTemplate =' \
         <li id="li-cat-$CLASSNAME" class="mdl-list__item"> \
             <span class="mdl-list__item-primary-action"> \
                 <span class="mdl-list__item-primary-content"> \
-                    <i class="material-icons  mdl-list__item-avatar">build</i> \
+                    <i class="material-icons  mdl-list__item-avatar">class</i> \
                     <h4>$NAME</h4> \
                 </span> \
             </span> \
@@ -106,7 +106,7 @@ TeamStock.prototype.listItemTemplate = ' \
             <span class="mdl-list__item-secondary-action"> \
                 <span class="mdl-list__item-secondary-content"> \
                     <h5> \
-                        <i id="item-icon-$CLASSNAME" class="material-icons mdl-badge mdl-badge--overlap" data-badge="$NUM">send</i> \
+                        <i id="item-icon-$CLASSNAME" class="material-icons mdl-badge mdl-badge--overlap" data-badge="$NUM">assignment</i> \
                         $NAME \
                         <i hidden class="material-icons">check</i> \
                     </h5> \
@@ -320,22 +320,23 @@ TeamStock.prototype.search = function(keyEvent) {
 
 // Load drawer/sidebar teams list
 TeamStock.prototype.loadSidebarContents = function() {
-    this.teamStorageButton.addEventListener('click', function() {
-        console.log('Switched to storage');
-        this.setActiveTeam.bind(this)('Storage');
+    this.sidebarAddTeamButton.addEventListener('click', function() {
+        this.addTeam.bind(this)();
     }.bind(this));
     
     var teamsRef = this.database.ref(this.prefix + 'teams');
     teamsRef.off('value');
     teamsRef.on('value', function(snapshot) {
         this.sidebarTeamsContainer.innerHTML = '';
-        Object.keys(snapshot.val()).forEach(function (teamName) {
+        Object.keys(snapshot.val()).forEach(function (teamId) {
+            var teamName = snapshot.val()[teamId].name;
+            console.log('NAME: '+teamName);
             this.sidebarTeamsContainer.innerHTML += this.drawerItemTemplate
                 .replace(/\$NAME/g, teamName);
             setTimeout(function() {
                 document.getElementById('drawer-team-'+teamName).addEventListener('click', function() {
                     setTimeout(function() {
-                        this.setActiveTeam.bind(this)(teamName);
+                        this.setActiveTeam.bind(this)(snapshot.val()[teamId]);
                     }.bind(this), 100);
                 }.bind(this));
             }.bind(this),100);
@@ -344,7 +345,7 @@ TeamStock.prototype.loadSidebarContents = function() {
 }
 
 // Sets and displays the team whose inventory is visible in the main list
-TeamStock.prototype.setActiveTeam = function(teamName) {
+TeamStock.prototype.setActiveTeam = function(team) {
     if(this.teamChangeCooldown) {
         toastr.error("Please wait a moment before switching teams again...");
         return;
@@ -354,6 +355,8 @@ TeamStock.prototype.setActiveTeam = function(teamName) {
     setTimeout(function () {
         this.teamChangeCooldown = false;
     }.bind(this),1000);
+    
+    var teamName = team && team.name || "None";
     
     this.activeTeam = teamName;
     this.selectedTeamlabel.innerHTML = teamName;
@@ -367,7 +370,7 @@ TeamStock.prototype.setActiveTeam = function(teamName) {
 TeamStock.prototype.addTeam = function() {
     this.dbSaveTeam.bind(this)(
         {
-            'name': window.prompt('Enter team name:').toUpperCase()
+            'name': window.prompt('Enter planner name:').toUpperCase()
         });
 }
 
@@ -813,25 +816,22 @@ TeamStock.prototype.dbSaveItem = function(item) {
 
 // Saves a new team to the database
 TeamStock.prototype.dbSaveTeam = function(team) {
-    var teamsRef = this.database.ref(this.prefix + 'teams/'+team.name);
+    var teamsRef = this.database.ref(this.prefix + 'teams/');
+    team['users'] = {};
+    team['users'][this.auth.currentUser.uid] = true;
         
     // Check if item exists
     teamsRef.once('value').then(function (snapshot) {
-        if(snapshot.val() != null) {
-            // Team already exists
-            toastr.error('That team already exists!', 'Uh oh..');
-        } else {
-            // Team does not exist, add item
-            console.log('Adding new team to database...');
-            teamsRef.set('').then(function () {
-                toastr.success('New team added successfully!');
-                this.hideSettingsModal.bind(this)();
-                this.showSettingsModal.bind(this)();
-            }.bind(this)).catch(function (error) {
-                console.error('Error writing new team to Firebase Database', error);
-                toastr.error('Error saving new team to database.', 'Uh oh...');
-            }.bind(this));
-        }
+        // Team does not exist, add item
+        console.log('Adding new team to database...');
+        teamsRef.push(team).then(function () {
+            toastr.success('New team added successfully!');
+            this.hideSettingsModal.bind(this)();
+            this.showSettingsModal.bind(this)();
+        }.bind(this)).catch(function (error) {
+            console.error('Error writing new team to Firebase Database', error);
+            toastr.error('Error saving new team to database.', 'Uh oh...');
+        }.bind(this));
     }.bind(this));
 }
 
@@ -937,7 +937,7 @@ TeamStock.prototype.saveUserIfNew = function(user) {
                 }
                 toastr.error('You do not have permission to access the database.', 'Uh oh..');
             } else {
-                this.setActiveTeam.bind(this)(snapshot.val()['team'] || 'Storage');
+                this.setActiveTeam.bind(this)(snapshot.val()['team'] || null);
             }
         } else {
             // User does not exist, add user
