@@ -471,8 +471,6 @@ TeamStock.prototype.hideItemModal = function() {
     doneButton.parentNode.replaceChild(newButton, doneButton);
     this.itemModalDoneButton = newButton;
     
-    this.itemModalContent.innerHTML = '';
-    this.itemModalChanges.innerHTML = '';
     $(this.itemModal).fadeOut(200);
     $('#item-modal-loading').slideDown();
     this.setControlState(true);
